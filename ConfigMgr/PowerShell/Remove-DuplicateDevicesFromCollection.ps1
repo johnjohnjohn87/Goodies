@@ -182,9 +182,11 @@ catch {
 # Delete duplicate device records and invoke AD System Discovery #
 ##################################################################
 
+<#
 # Wait 5 minutes for devices to register with ConfigMgr
 Write-Log -Message "Waiting for 5 minutes for devices to register with ConfigMgr"
 Start-Sleep -Seconds 300
+#>
 
 # Delete duplicates
 try {
