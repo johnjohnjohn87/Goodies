@@ -78,6 +78,7 @@ function Start-Log {
     }
     catch {
         Write-Error $_.Exception.Message
+        Exit
     }
 }
 
@@ -107,8 +108,6 @@ function Remove-CMDuplicateDevices {
         Write-Log "$TotalToDelete duplicate devices detected"
         $Duplicates | ForEach-Object {
             try {
-                $ToLog = ("Deleting device - ResourceID: " + $_.ResourceID + "name: " + $_.name)
-                Write-Log -Message "$ToLog"
                 if ($Testing) {
                     $ToLog = ("TEST MODE! WhatIf: Deleting device - ResourceID: " + $_.ResourceID + "name: " + $_.name)
                     Write-Log -Message "$ToLog"
@@ -128,7 +127,8 @@ function Remove-CMDuplicateDevices {
         }
     }
     catch {
-        Write-Log $_.Exception.Message -LogLevel 2 
+        Write-Log $_.Exception.Message -LogLevel 2
+        Break
     }
 }
 
@@ -143,7 +143,8 @@ try {
     Start-Log -FilePath "$ScriptDirectory\Remove-DuplicateDevicesFromCollection.log"
 }
 catch {
-    Write-Output "Unable to get working directory for script path" 
+    Write-Output "Unable to get working directory for script path"
+    Exit
 }
 
 # Connect to CM
@@ -174,7 +175,7 @@ try {
 catch {
     Write-Log 'Unable to connect to ConfigMgr' -LogLevel 3
     Write-Log $_.Exception.Message -LogLevel 3
-    Break
+    Exit
 }
 
 
@@ -191,10 +192,11 @@ Start-Sleep -Seconds 300
 # Delete duplicates
 try {
     Remove-CMDuplicateDevices
+    Write-Log -Message "All done!"
 }
 catch {
     Write-Log $_.Exception.Message
-    Break
+    Exit
 }
 
 <#
