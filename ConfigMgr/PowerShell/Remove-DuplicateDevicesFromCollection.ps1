@@ -26,15 +26,8 @@ Example Run Script
 
 Written by John Bart
 Inspired by https://configmgr.nl/2017/06/06/sccm-duplicate-device-records/
-Logging with CMTrace https://adamtheautomator.com/building-logs-for-cmtrace-powershell/
+Learned about CMTrace logging here https://adamtheautomator.com/building-logs-for-cmtrace-powershell/
 #>
-
-
-###### SHIT TO DO !!!######################
-    # consider adding a sleep timer if triggering by CM rules
-    # add full AD discovery to this?
-    # should probably add checking for SMBIOSGUID to not exist
-
 
 ##################
 # Set Parameters #
