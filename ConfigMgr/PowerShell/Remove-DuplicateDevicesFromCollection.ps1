@@ -29,6 +29,7 @@ Inspired by https://configmgr.nl/2017/06/06/sccm-duplicate-device-records/
 Learned about CMTrace logging here https://adamtheautomator.com/building-logs-for-cmtrace-powershell/
 #>
 
+
 ##################
 # Set Parameters #
 ##################
@@ -52,12 +53,12 @@ Param (
 # Declare Functions #
 #####################
 
-# The log file will need a home
+# Get script directory for log file
 function Get-ScriptDirectory {
         $global:ScriptDirectory = Get-Location | Convert-Path
 }
 
-# Creates a log file if one isn't there and sets the path
+# Creates a log file sets log file path
 function Start-Log {
     [CmdletBinding()]
     param (
@@ -98,7 +99,7 @@ function Write-Log {
     Add-Content -Value $Line -Path $ScriptLogFilePath
 }
 
-# Deletes duplicated devices from the specified collection (only if no client is installed and SMBIOSGUID data is not in ConfigMgr)
+# Deletes duplicated devices from the specified collection
 function Remove-CMDuplicateDevices {
     try {
         $Duplicates = Get-CMCollectionMember -CollectionName $DeviceCollection | Where-Object {($_.IsClient -ne "True") -and ($_.SMBIOSGUID -eq $null)}
@@ -118,22 +119,19 @@ function Remove-CMDuplicateDevices {
                     Write-Log -Message "$ToLog"
                     Remove-CMResource -ResourceId $_.ResourceID -Force
                 }
-
-                Remove-CMResource -ResourceId $_.ResourceID -WhatIf
-                # Comment out the above -WhatIf to run deletion
             }
             catch {
                 $ToLog = ( "Unable to delete ResourceID: " + $_.ResourceID + "name: " + $_.name)
                 Write-Log -Message "$ToLog" -LogLevel 2
                 Write-Log $_.Exception.Message -LogLevel 2
             }
-            
         }
     }
     catch {
         Write-Log $_.Exception.Message -LogLevel 2 
     }
 }
+
 
 ###################################
 # Start logging and connect to CM #
@@ -184,7 +182,7 @@ catch {
 # Delete duplicate device records and invoke AD System Discovery #
 ##################################################################
 
-# Wait 10 minutes for devices to register with ConfigMgr
+# Wait 5 minutes for devices to register with ConfigMgr
 Start-Sleep -Seconds 300
 
 # Delete duplicates
